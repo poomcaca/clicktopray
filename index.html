@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Click to Pray - Digital Prayer Beads for Modern Spiritual Practice">
+    <meta name="keywords" content="prayer beads, digital prayer, meditation counter, spiritual practice, click to pray">
+    <meta name="author" content="Click To Pray">
+    <link rel="canonical" href="https://yourdomain.com/index.html">
+    <title>Click To Pray - Digital Prayer Beads</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'prayer-orange': '#D4916A',
+                        'prayer-brown': '#8B4513',
+                        'prayer-light': '#F5F5F7'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #D4916A;
+            font-family: 'Arial', sans-serif;
+        }
+        .bead-container {
+            position: relative;
+            height: 600px;
+            width: 120px;
+            margin: 0 auto;
+            padding: 10px 0;
+            background: linear-gradient(to right, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 40%,
+                rgba(255, 255, 255, 0.1) 60%,
+                transparent 100%
+            );
+            border-radius: 60px;
+        }
+        .bead {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.5s ease-in-out;
+            background-image: url('bead.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+        }
+        .bead:hover {
+            transform: translateX(-50%) scale(1.05);
+            filter: drop-shadow(4px 8px 12px rgba(0, 0, 0, 0.3));
+        }
+        .bead::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: calc(100% + 15px);
+            background: linear-gradient(to bottom,
+                rgba(44, 24, 16, 0.4) 0%,
+                rgba(44, 24, 16, 0.6) 50%,
+                rgba(44, 24, 16, 0.4) 100%
+            );
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        .merit-popup {
+            position: absolute;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.5s;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .merit-popup.show {
+            animation: floatUp 1s ease-out;
+        }
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: opacity 0.3s;
+        }
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+        .content-panel {
+            background: linear-gradient(
+                135deg, 
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .main-container {
+            background: radial-gradient(
+                circle at center,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 70%
+            );
+            padding: 2rem;
+            border-radius: 30px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <span class="text-white text-2xl font-bold">CLICK TO PRAY</span>
+        </div>
+        
+    </nav>
+
+    <div class="container mx-auto px-4 mt-16">
+        <div class="flex justify-between items-start main-container">
+            <div class="w-1/3">
+                <div class="content-panel mb-8">
+                    <div class="text-white">
+                        <div class="text-6xl font-bold">1</div>
+                        <div class="text-xl">Tuesday</div>
+                        <div class="text-xl">April</div>
+                    </div>
+                </div>
+                <div class="content-panel">
+                    <div class="text-white text-4xl mb-4">Total Merit: <span id="counter">0</span></div>
+                    <p class="text-white/90">Merit is like spiritual 'credit' earned through good deeds and practice, believed to improve one's karma and future rebirths.</p>
+                </div>
+            </div>
+            
+            <div class="flex-1 flex justify-center">
+                <div id="beads-container" class="bead-container">
+                    <!-- Beads will be added here dynamically -->
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const beadsContainer = document.getElementById('beads-container');
+            const counter = document.getElementById('counter');
+            let count = 0;
+            let isAnimating = false;
+            const BEAD_COUNT = 6;
+            const SPACING = 100;
+
+            // Create beads and position them
+            for (let i = 0; i < BEAD_COUNT; i++) {
+                const bead = document.createElement('div');
+                bead.className = 'bead';
+                bead.style.top = (i * SPACING) + 'px';
+                beadsContainer.appendChild(bead);
+            }
+
+            const beads = Array.from(document.querySelectorAll('.bead'));
+
+            function createMeritPopup(x, y) {
+                const popup = document.createElement('div');
+                popup.className = 'merit-popup';
+                popup.textContent = 'Merit +1';
+                popup.style.left = x + 'px';
+                popup.style.top = y + 'px';
+                document.body.appendChild(popup);
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    popup.classList.add('show');
+                });
+
+                // Remove popup after animation
+                setTimeout(() => {
+                    document.body.removeChild(popup);
+                }, 1000);
+            }
+
+            function animateBeads(event) {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                // Create merit popup near click position
+                const rect = event.target.getBoundingClientRect();
+                createMeritPopup(event.clientX, rect.top);
+
+                count++;
+                counter.textContent = count;
+
+                // Move first bead to bottom
+                const firstBead = beads.shift();
+                beads.push(firstBead);
+
+                // Animate all beads
+                beads.forEach((bead, index) => {
+                    bead.style.top = (index * SPACING) + 'px';
+                });
+
+                setTimeout(() => {
+                    isAnimating = false;
+                }, 500);
+            }
+
+            // Add click event to each bead
+            beads.forEach(bead => {
+                bead.addEventListener('click', animateBeads);
+            });
+        });
+    </script>
+</body>
+</html> 
