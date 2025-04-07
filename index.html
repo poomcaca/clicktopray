@@ -209,7 +209,7 @@
             const BEAD_COUNT = 6;
             const SPACING = 100;
 
-            // Create beads and position them
+            // 创建佛珠
             for (let i = 0; i < BEAD_COUNT; i++) {
                 const bead = document.createElement('div');
                 bead.className = 'bead';
@@ -227,12 +227,10 @@
                 popup.style.top = y + 'px';
                 document.body.appendChild(popup);
                 
-                // Trigger animation
                 requestAnimationFrame(() => {
                     popup.classList.add('show');
                 });
 
-                // Remove popup after animation
                 setTimeout(() => {
                     document.body.removeChild(popup);
                 }, 1000);
@@ -274,8 +272,12 @@
                 bead.addEventListener('click', animateBeads);
             });
 
-            backgroundMusic.play().catch(error => {
-                console.log('Autoplay was prevented:', error);
+            // 在用户第一次点击页面时播放背景音乐
+            document.body.addEventListener('click', function playMusicOnce() {
+                backgroundMusic.play().catch(error => {
+                    console.log('Autoplay was prevented:', error);
+                });
+                document.body.removeEventListener('click', playMusicOnce);
             });
         });
 
