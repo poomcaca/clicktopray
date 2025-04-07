@@ -274,6 +274,7 @@
 
             // 在用户第一次点击页面时播放背景音乐
             document.body.addEventListener('click', function playMusicOnce() {
+                const backgroundMusic = document.getElementById('backgroundMusic');
                 backgroundMusic.play().catch(error => {
                     console.log('Autoplay was prevented:', error);
                 });
