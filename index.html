@@ -166,14 +166,23 @@
                     <div class="text-white text-4xl mb-4">Total Merit: <span id="counter">0</span></div>
                     <p class="text-white/90 text-xl">Merit is like spiritual 'credit' earned through good deeds and practice, believed to improve one's karma and future rebirths.</p>
                 </div>
+                <div class="content-panel mt-8">
+                    <p class="text-blue-500 text-2xl font-bold">
+                        Simply focus, breathe, and connect. Start your prayer journey in seconds: one click, one breath, one world.
+                    </p>
+                </div>
             </div>
             
-            <div class="flex-1 flex flex-col items-center">
-                <div class="text-white/90 text-2xl mb-6 tracking-wide font-light">
-                    Click the Prayer beads to pray
-                </div>
-                <div id="beads-container" class="bead-container">
-                    <!-- Beads will be added here dynamically -->
+            <div class="flex-1 flex items-center">
+                <!-- 自动转动按钮 -->
+                <button id="autoRotateButton" class="audio-btn mr-4">Start Auto Rotate</button>
+                <div class="flex flex-col items-center">
+                    <div class="text-white/90 text-2xl mb-6 tracking-wide font-light">
+                        Click the Prayer beads to pray
+                    </div>
+                    <div id="beads-container" class="bead-container">
+                        <!-- Beads will be added here dynamically -->
+                    </div>
                 </div>
             </div>
             
@@ -196,18 +205,27 @@
         </div>
     </div>
 
+    <!-- 添加赞赏功能按钮 -->
+    <div id="donateButton" style="position: fixed; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.1); padding: 10px; border-radius: 10px; backdrop-filter: blur(5px);">
+        <a href="https://buymeacoffee.com/poomcaca" target="_blank" class="audio-btn" style="text-decoration: none;">
+            Thank you for your generous support. Half of all donations will be contributed to charitable organizations to help cultivate blessings and positive karma. The remaining funds will be dedicated to enhancing the website, ensuring a more seamless and spiritually enriching experience for all.
+        </a>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const beadsContainer = document.getElementById('beads-container');
             const counter = document.getElementById('counter');
             const backgroundMusic = document.getElementById('backgroundMusic');
             const clickSound = document.getElementById('clickSound');
+            const autoRotateButton = document.getElementById('autoRotateButton');
             clickSound.volume = 1.0; // 设置点击音效的音量为最大
 
             let count = 0;
             let isAnimating = false;
             const BEAD_COUNT = 6;
             const SPACING = 100;
+            let autoRotateInterval = null;
 
             // 创建佛珠
             for (let i = 0; i < BEAD_COUNT; i++) {
@@ -279,6 +297,20 @@
                     console.log('Autoplay was prevented:', error);
                 });
                 document.body.removeEventListener('click', playMusicOnce);
+            });
+
+            // 自动转动功能
+            autoRotateButton.addEventListener('click', function() {
+                if (autoRotateInterval) {
+                    clearInterval(autoRotateInterval);
+                    autoRotateInterval = null;
+                    autoRotateButton.textContent = 'Start Auto Rotate';
+                } else {
+                    autoRotateInterval = setInterval(() => {
+                        beads[0].click();
+                    }, 1000); // 每秒点击一次
+                    autoRotateButton.textContent = 'Stop Auto Rotate';
+                }
             });
         });
 
